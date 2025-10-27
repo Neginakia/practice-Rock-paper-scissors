@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rock • Paper • Scissors — Mini Game</title>
+  <style>
+    :root{
+      --bg:#0f1724; /* deep navy */
+      --card:#0b1220;
+      --muted:#94a3b8;
+      --accent:#7c3aed; /* purple */
+      --glass: rgba(255,255,255,0.03);
+      --glass-2: rgba(255,255,255,0.02);
+      --success:#10b981;
+      --danger:#ef4444;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.12), transparent), radial-gradient(900px 400px at 90% 85%, rgba(16,185,129,0.06), transparent), var(--bg);
+      color:#e6eef8;
+      display:flex;align-items:center;justify-content:center;padding:28px;
+    }
+
+    .container{
+      width:980px;max-width:98%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:22px;box-shadow:0 8px 30px rgba(2,6,23,0.6);display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start;
+    }
+
+    header{
+      grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;
+    }
+    h1{font-size:20px;margin:0}
+    .sub{color:var(--muted);font-size:13px}
+
+    /* left panel */
+    .game{
+      background:linear-gradient(180deg,var(--card), rgba(10,14,20,0.7));padding:20px;border-radius:12px;min-height:320px;display:flex;flex-direction:column;gap:18px;position:relative;overflow:hidden;
+    }
+
+    .arena{
+      display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:10px;background:var(--glass);backdrop-filter:blur(4px);
+    }
+    .player, .computer{display:flex;flex-direction:column;align-items:center;gap:8px;width:46%;}
+    .label{font-size:13px;color:var(--muted)}
+    .hand{
+      width:120px;height:120px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:inset 0 -6px 20px rgba(0,0,0,0.35);transition:transform .24s ease, box-shadow .24s ease;
+    }
+    .hand.animate{transform:translateY(-8px) scale(1.02);box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+
+    .scoreCard{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--glass-2);padding:12px;border-radius:10px;width:110px}
+    .score{font-size:24px;font-weight:600}
+    .small{font-size:12px;color:var(--muted)}
+
+    /* choices */
+    .choices{display:flex;justify-content:center;gap:12px}
+    .btn{
+      appearance:none;border:0;padding:12px 18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));cursor:pointer;min-width:96px;display:flex;gap:10px;align-items:center;justify-content:center;font-weight:600;color:inherit;outline:2px solid transparent;transition:transform .16s ease, box-shadow .16s ease, outline-color .16s;
+    }
+    .btn:hover{transform:translateY(-6px)}
+    .btn:active{transform:translateY(-2px)}
+
+    .btn.r{border:2px solid rgba(239,68,68,0.08)}
+    .btn.p{border:2px solid rgba(34,197,94,0.06)}
+    .btn.s{border:2px solid rgba(59,130,246,0.06)}
+
+    .resultBanner{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));font-weight:700}
+    .resultWin{color:var(--success)}
+    .resultLose{color:var(--danger)}
+    .resultTie{color:var(--muted)}
+
+    /* right panel */
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:18px;border-radius:12px;height:100%;display:flex;flex-direction:column;gap:12px}
+    .panel h3{margin:0;font-size:14px}
+    .panel .mini{font-size:13px;color:var(--muted)}
+
+    .controls{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{padding:8px 10px;border-radius:999px;background:var(--glass);font-size:13px}
+
+    .tips{font-size:13px;color:var(--muted);line-height:1.45}
+
+    footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:12px;margin-top:6px}
+
+    /* stickers */
+    .sticker{position:absolute;opacity:0.06;font-size:180px;user-select:none;pointer-events:none;}
+    .sticker.top{top:-30px;left:-20px;transform:rotate(-18deg)}
+    .sticker.bot{bottom:-40px;right:-10px;transform:rotate(12deg)}
+
+    /* responsive */
+    @media (max-width:880px){
+      .container{grid-template-columns:1fr;}
+      .panel{order:2}
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="application" aria-label="Rock Paper Scissors mini game">
+    <header>
+      <div>
+        <h1>Rock • Paper • Scissors <span style="color:var(--muted);font-weight:600;font-size:13px">— Mini Game</span></h1>
+        <div class="sub">Kleine Demo — bereit für GitHub Pages</div>
+      </div>
+      <div class="sub">Made with ♥ — No assets required</div>
+    </header>
+
+    <main class="game">
+      <div class="sticker top">✦</div>
+      <div class="sticker bot">✺</div>
+
+      <div class="arena" aria-live="polite">
+        <div class="player">
+          <div class="label">Du</div>
+          <div id="playerHand" class="hand" aria-hidden="true">✊</div>
+        </div>
+
+        <div class="scoreCard" aria-hidden="false">
+          <div class="small">Punkte</div>
+          <div id="score" class="score">0 : 0</div>
+          <div class="small">Siege : Verluste</div>
+        </div>
+
+        <div class="computer">
+          <div class="label">Computer</div>
+          <div id="computerHand" class="hand" aria-hidden="true">✋</div>
+        </div>
+      </div>
+
+      <div class="choices" role="group" aria-label="Wähle Stein Schere Papier">
+        <button class="btn r" data-choice="rock" title="Stein">✊<span style="margin-left:6px">Stein</span></button>
+        <button class="btn p" data-choice="paper" title="Papier">✋<span style="margin-left:6px">Papier</span></button>
+        <button class="btn s" data-choice="scissors" title="Schere">✌️<span style="margin-left:6px">Schere</span></button>
+      </div>
+
+      <div id="resultArea" class="resultBanner" aria-live="polite" style="margin-top:6px;">
+        Viel Glück! 🎲
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto;gap:12px;">
+        <div class="small">Tip: Benutze auch die Tasten R (Stein), P (Papier), S (Schere)</div>
+        <div style="display:flex;gap:10px">
+          <button id="resetBtn" class="btn" title="Reset Scores">Zurücksetzen</button>
+          <button id="shareBtn" class="btn" title="Open in new tab">Öffnen</button>
+        </div>
+      </div>
+
+    </main>
+
+    <aside class="panel" aria-label="Game info and settings">
+      <h3>Spiel-Info</h3>
+      <div class="mini">Ein einfaches, schönes Rock‑Paper‑Scissors Spiel. Keine externen Bilder — nur Systemfonts und Emoji als "Stickers".</div>
+
+      <div class="controls">
+        <div class="chip">Best of: <strong id="bestOfLabel">3</strong></div>
+        <div class="chip">Persistenz: <strong id="persistLabel">An</strong></div>
+      </div>
+
+      <h3 style="margin-top:8px">Anleitung</h3>
+      <div class="tips">Wähle eine Option oder drücke R / P / S. Nach jedem Spiel zeigt die Anzeige das Ergebnis und aktualisiert die Punkte. Das Ergebnis wird lokal im Browser gespeichert (localStorage).</div>
+
+      <h3 style="margin-top:8px">Vorbereiten für GitHub</h3>
+      <div class="mini">Speichere diese Datei als <code>index.html</code> und lade sie in ein GitHub‑Repository hoch. Aktiviere GitHub Pages (branch: main, root) um die Seite zu hosten.</div>
+
+      <h3 style="margin-top:8px">Warum diese Version?</h3>
+      <div class="mini">Einzelne HTML‑Datei = einfach zu deployen. Keine Build‑Tools nötig — ideal für schnelle Portfolio‑Demos.</div>
+
+    </aside>
+
+    <footer>Made by you — ready for GitHub Pages · Local scores saved in your browser</footer>
+  </div>
+
+  <script>
+    (function(){
+      const choices = ['rock','paper','scissors'];
+      const emojiMap = {rock:'✊',paper:'✋',scissors:'✌️'};
+      const btns = document.querySelectorAll('.btn[data-choice]');
+      const playerHand = document.getElementById('playerHand');
+      const computerHand = document.getElementById('computerHand');
+      const resultArea = document.getElementById('resultArea');
+      const scoreLabel = document.getElementById('score');
+      const resetBtn = document.getElementById('resetBtn');
+      const shareBtn = document.getElementById('shareBtn');
+
+      let state = {wins:0, losses:0, ties:0};
+      const STORAGE_KEY = 'rps_game_scores_v1';
+
+      // load state
+      try{ const s = localStorage.getItem(STORAGE_KEY); if(s) state = JSON.parse(s);}catch(e){}
+      updateScore();
+
+      function updateScore(){ scoreLabel.textContent = `${state.wins} : ${state.losses}`; }
+
+      function computerPick(){ return choices[Math.floor(Math.random()*choices.length)]; }
+
+      function decide(player, comp){
+        if(player===comp) return 'tie';
+        if((player==='rock'&&comp==='scissors') || (player==='scissors'&&comp==='paper') || (player==='paper'&&comp==='rock')) return 'win';
+        return 'lose';
+      }
+
+      function animateHands(){ playerHand.classList.add('animate'); computerHand.classList.add('animate'); setTimeout(()=>{playerHand.classList.remove('animate');computerHand.classList.remove('animate');},260); }
+
+      function play(playerChoice){
+        animateHands();
+        playerHand.textContent = emojiMap[playerChoice];
+        const comp = computerPick();
+        // small delay to feel tactile
+        setTimeout(()=>{
+          computerHand.textContent = emojiMap[comp];
+          const res = decide(playerChoice, comp);
+          if(res==='win'){ state.wins++; resultArea.innerHTML = '<span class="resultWin">Du hast gewonnen! 🎉</span>' }
+          else if(res==='lose'){ state.losses++; resultArea.innerHTML = '<span class="resultLose">Du hast verloren 😢</span>' }
+          else { state.ties++; resultArea.innerHTML = '<span class="resultTie">Unentschieden 🤝</span>' }
+          updateScore();
+          try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+        },380);
+      }
+
+      btns.forEach(b=> b.addEventListener('click', ()=> play(b.dataset.choice)));
+
+      // keyboard support
+      window.addEventListener('keydown', (e)=>{
+        const key = e.key.toLowerCase();
+        if(key==='r') play('rock');
+        if(key==='p') play('paper');
+        if(key==='s') play('scissors');
+      });
+
+      resetBtn.addEventListener('click', ()=>{
+        state = {wins:0,losses:0,ties:0}; updateScore(); resultArea.textContent='Zurückgesetzt ✔'; try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
+      });
+
+      shareBtn.addEventListener('click', ()=>{
+        window.open(window.location.href,'_blank');
+      });
+
+      // accessibility: announce result
+      const obs = new MutationObserver(()=>{
+        resultArea.setAttribute('aria-live','polite');
+      });
+      obs.observe(resultArea,{childList:true,subtree:true});
+
+    })();
+  </script>
+</body>
+</html>
